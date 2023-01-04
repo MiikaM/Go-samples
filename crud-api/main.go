@@ -1,9 +1,12 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
+	"math/rand"
 	"net/http"
+	"strconv"
 
 	"github.com/gorilla/mux"
 )
@@ -58,27 +61,48 @@ func main() {
 	}
 }
 
-func getMoviesHandler(w http.ResponseWriter, r *http.Request) {
+func getMoviesHandler(res http.ResponseWriter, req *http.Request) {
+	res.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(res).Encode(movies)
+}
+
+func createMovieHandler(res http.ResponseWriter, req *http.Request) {
+	res.Header().Set("Content-Type", "application/json")
+
+	var movie Movie
+	_ = json.NewDecoder(req.Body).Decode(&movie)
+
+	movie.ID = strconv.FormatInt(rand.Int63n(1000000), 10)
+	return
+}
+
+func getByIdHandler(res http.ResponseWriter, req *http.Request) {
+	res.Header().Set("Content-Type", "application/json")
+	params := mux.Vars(req)
+	for _, item := range movies {
+		if item.ID == params["id"] {
+			json.NewEncoder(res).Encode(item)
+			return
+		}
+	}
+
+}
+
+func updateByIdHandler(res http.ResponseWriter, req *http.Request) {
+	res.Header().Set("Content-Type", "application/json")
 	log.Fatal("Not implemented")
 	return
 }
 
-func createMovieHandler(w http.ResponseWriter, r *http.Request) {
-	log.Fatal("Not implemented")
-	return
-}
+func deleteByIdHandler(res http.ResponseWriter, req *http.Request) {
+	res.Header().Set("Content-Type", "application/json")
+	params := mux.Vars(req)
+	for index, item := range movies {
+		if item.ID == params["id"] {
+			movies = append(movies[:index], movies[index+1:]...)
+			break
+		}
+	}
 
-func getByIdHandler(w http.ResponseWriter, r *http.Request) {
-	log.Fatal("Not implemented")
-	return
-}
-
-func updateByIdHandler(w http.ResponseWriter, r *http.Request) {
-	log.Fatal("Not implemented")
-	return
-}
-
-func deleteByIdHandler(w http.ResponseWriter, r *http.Request) {
-	log.Fatal("Not implemented")
-	return
+	json.NewEncoder(res).Encode(movies)
 }
