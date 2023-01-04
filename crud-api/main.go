@@ -73,7 +73,8 @@ func createMovieHandler(res http.ResponseWriter, req *http.Request) {
 	_ = json.NewDecoder(req.Body).Decode(&movie)
 
 	movie.ID = strconv.FormatInt(rand.Int63n(1000000), 10)
-	return
+	movies = append(movies, movie)
+	json.NewEncoder(res).Encode(movie)
 }
 
 func getByIdHandler(res http.ResponseWriter, req *http.Request) {
@@ -90,6 +91,22 @@ func getByIdHandler(res http.ResponseWriter, req *http.Request) {
 
 func updateByIdHandler(res http.ResponseWriter, req *http.Request) {
 	res.Header().Set("Content-Type", "application/json")
+
+	params := mux.Vars(req)
+
+	for index, item := range movies {
+		if item.ID == params["id"] {
+			movies = append(movies[:index], movies[index+1:]...)
+			var movie Movie
+			_ = json.NewDecoder(req.Body).Decode(&movie)
+			movie.ID = params["id"]
+			movies = append(movies, movie)
+			json.NewEncoder(res).Encode(movie)
+			return
+
+		}
+	}
+
 	log.Fatal("Not implemented")
 	return
 }
