@@ -26,7 +26,7 @@ type Director struct {
 var movies []Movie
 
 func main() {
-	r := mux.NewRouter()
+	router := mux.NewRouter()
 
 	movies = append(movies, Movie{
 		ID:    "1",
@@ -48,21 +48,19 @@ func main() {
 		},
 	})
 
-	r.HandleFunc("/movies", getMoviesHandler).Methods("GET")
-	r.HandleFunc("/movies/", createMovieHandler).Methods("POST")
-	r.HandleFunc("/movies/{id}", getByIdHandler).Methods("GET")
-	r.HandleFunc("/movies/{id}", updateByIdHandler).Methods("POST")
-	r.HandleFunc("/movies/{id}", deleteByIdHandler).Methods("DELETE")
+	router.HandleFunc("/movies", getMoviesHandler).Methods("GET")
+	router.HandleFunc("/movies", createMovieHandler).Methods("POST")
+	router.HandleFunc("/movies/{id}", getByIdHandler).Methods("GET")
+	router.HandleFunc("/movies/{id}", updateByIdHandler).Methods("POST")
+	router.HandleFunc("/movies/{id}", deleteByIdHandler).Methods("DELETE")
 
 	fmt.Println("Starting movie service at port 8080")
-	err := http.ListenAndServe(":8080", nil)
-	if err != nil {
-		log.Fatal(err)
-	}
+	http.ListenAndServe(":8080", router)
 }
 
 func getMoviesHandler(res http.ResponseWriter, req *http.Request) {
 	res.Header().Set("Content-Type", "application/json")
+	log.Default().Println("Movie handler")
 	json.NewEncoder(res).Encode(movies)
 }
 
