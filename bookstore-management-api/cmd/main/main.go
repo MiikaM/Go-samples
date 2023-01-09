@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/gorilla/mux"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
@@ -15,6 +16,6 @@ func main() {
 
 	routes.RegisterBookStoreRoutes(router)
 	http.Handle("/", router)
-	fmt.Println("Starting movie service at port 8080")
-	log.Fatal(http.ListenAndServe(":8080", router))
+	fmt.Println("Starting movie service at port <>")
+	log.Fatal(http.ListenAndServe(":"+os.Getenv("PORT"), router))
 }

@@ -6,6 +6,7 @@ import (
 	"log"
 	"math/rand"
 	"net/http"
+	"os"
 	"strconv"
 
 	"github.com/gorilla/mux"
@@ -54,8 +55,8 @@ func main() {
 	router.HandleFunc("/movies/{id}", updateByIdHandler).Methods("POST")
 	router.HandleFunc("/movies/{id}", deleteByIdHandler).Methods("DELETE")
 
-	fmt.Println("Starting movie service at port 8080")
-	http.ListenAndServe(":8080", router)
+	fmt.Println("Starting movie service at port PORT")
+	http.ListenAndServe(":" + os.Getenv("PORT"), router)
 }
 
 func getMoviesHandler(res http.ResponseWriter, req *http.Request) {
